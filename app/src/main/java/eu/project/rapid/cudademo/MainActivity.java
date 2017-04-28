@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import eu.project.rapid.ac.DFE;
 import eu.project.rapid.common.Clone;
 import eu.project.rapid.common.RapidConstants;
+import eu.project.rapid.gvirtus.Buffer;
 import eu.project.rapid.gvirtus.Providers;
 
 public class MainActivity extends AppCompatActivity {
@@ -33,17 +34,13 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
-
-
-
-
         Providers.getInstance().register("193.205.230.23",9991);
 
         String vmIp="10.0.0.3";
 
         Clone clone=null;
         clone=new Clone("", vmIp);
+
         dfe = DFE.getInstance(getPackageName(), getPackageManager(), this,
                 clone, false, RapidConstants.COMM_TYPE.CLEAR);
         matrixMul=new MatrixMul(dfe);
@@ -73,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Example of a call to a native method
     TextView tv = (TextView) findViewById(R.id.sample_text);
-    tv.setText(stringFromJNI());
+    tv.setText("CUDADemo");
     }
 
     @Override
@@ -97,17 +94,4 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
-    /**
-     * A native method that is implemented by the 'native-lib' native library,
-     * which is packaged with this application.
-     */
-    public native String stringFromJNI();
-
-    // Used to load the 'native-lib' library on application startup.
-    static {
-        System.loadLibrary("native-lib");
-    }
-
-
 }
