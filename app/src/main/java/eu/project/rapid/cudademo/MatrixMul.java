@@ -17,17 +17,17 @@ import eu.project.rapid.gvirtus.Util;
  */
 
 public class MatrixMul extends Remoteable {
-    private transient DFE dfe;
+    private transient DFE dfe=null;
 
     private int widthA;
     private int heightA;
     private int widthB;
 
     private String ptxSource;
+    private final String ptxName = "cuda-kernels/matrixMul_kernel64.ptx";
+
 
     public MatrixMul(DFE dfe) {
-        this.dfe = dfe;
-        String ptxName = "cuda-kernels/matrixMul_kernel64.ptx";
         try {
             ptxSource = Util.readAssetFileAsString(dfe.getContext(), ptxName);
         } catch (IOException ex) {
@@ -53,13 +53,17 @@ public class MatrixMul extends Remoteable {
         this.heightA = heightA;
         this.widthB = widthB;
         Method toExecute;
-        Class<?>[] paramTypes = {int.class};
+        Class<?>[] paramTypes = {int.class,int.class,int.class};
         Object[] paramValues = {widthA,heightA,widthB};
 
         int result = 0;
         try {
-            toExecute = this.getClass().getDeclaredMethod("localSolveNQueens", paramTypes);
-            result = (Integer) dfe.execute(toExecute, paramValues, this);
+            toExecute = this.getClass().getDeclaredMethod("localGpuMatrixMul", paramTypes);
+            if (dfe!=null) {
+                result = (Integer) dfe.execute(toExecute, paramValues, this);
+            } else {
+                toExecute.invoke(this,paramValues);
+            }
         } catch (SecurityException e) {
             // Should never get here
             e.printStackTrace();
