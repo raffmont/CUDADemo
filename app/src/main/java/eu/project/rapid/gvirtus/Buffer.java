@@ -97,7 +97,7 @@ public final class Buffer {
 
 	    public static final class Helper{
 	    	static {
-	    		System.loadLibrary("ndkBuffer"); // Load native library at runtime
+				System.loadLibrary("native-lib"); // Load native library at runtime
 	    	}
 			private native String prepareFloat(float[] floats);
 	    	private native String preparePtxSource(String ptxSource, long size);
