@@ -14,7 +14,7 @@ Java_eu_project_rapid_cudademo_MainActivity_stringFromJNI(
 
 
 JNIEXPORT jstring JNICALL
-Java_eu_project_rapid_gvirtus_Buffer_00024Helper_prepareFloat(JNIEnv *env,
+Java_eu_project_rapid_gvirtus_Buffer_Helper_prepareFloat(JNIEnv *env,
                                                                         jobject instance,
                                                                         jfloatArray arr) {
     jstring result=NULL;
@@ -52,7 +52,7 @@ Java_eu_project_rapid_gvirtus_Buffer_00024Helper_prepareFloat(JNIEnv *env,
 }
 
 JNIEXPORT jstring JNICALL
-Java_eu_project_rapid_gvirtus_Buffer_00024Helper_preparePtxSource(JNIEnv *env,
+Java_eu_project_rapid_gvirtus_Buffer_Helper_preparePtxSource(JNIEnv *env,
                                                                             jobject instance,
                                                                             jstring ptxSource_,
                                                                             jlong size) {
@@ -101,8 +101,8 @@ printf("name printed as %%x 3 is %02X\n",nativeString[3] & 0xff);*/
 }
 
 JNIEXPORT jstring JNICALL
-Java_eu_project_rapid_gvirtus_Buffer_00024Helper_prepareSingleByte(JNIEnv *env,
-                                                                             jobject instance, jint i) {
+Java_eu_project_rapid_gvirtus_Buffer_Helper_prepareSingleByte(JNIEnv *env, jobject instance,
+                                                              jint i) {
 
     char *msg=NULL;
     long msg_size=2+1;
