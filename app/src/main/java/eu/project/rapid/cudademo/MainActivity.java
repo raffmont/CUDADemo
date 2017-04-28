@@ -1,19 +1,16 @@
 package eu.project.rapid.cudademo;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.widget.TextView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import eu.project.rapid.ac.DFE;
 import eu.project.rapid.common.Clone;
@@ -21,10 +18,10 @@ import eu.project.rapid.common.RapidConstants;
 import eu.project.rapid.gvirtus.Providers;
 
 public class MainActivity extends AppCompatActivity {
-    private DFE dfe=null;
+    private DFE dfe = null;
     private MatrixMul matrixMul;
 
-    private Handler handler=new Handler();
+    private Handler handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,19 +31,15 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
 
+        Providers.getInstance().register("193.205.230.23", 9991);
 
+        String vmIp = "192.168.0.182";
 
-
-
-        Providers.getInstance().register("193.205.230.23",9991);
-
-        String vmIp="10.0.0.3";
-
-        Clone clone=null;
-        clone=new Clone("", vmIp);
+        Clone clone = null;
+        clone = new Clone("", vmIp);
         dfe = DFE.getInstance(getPackageName(), getPackageManager(), this,
                 clone, false, RapidConstants.COMM_TYPE.CLEAR);
-        matrixMul=new MatrixMul(dfe);
+        matrixMul = new MatrixMul(dfe);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -58,12 +51,21 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {
                         Snackbar.make(view, "Pre myRemotedMethod", Snackbar.LENGTH_LONG)
                                 .setAction("Action", null).show();
-                        if (matrixMul!=null) {
+                        Log.d("MainActivity", "Pre myRemotedMethod");
+                        if (matrixMul != null) {
+                            Log.d("MainActivity", "matrixMul != null");
                             int wa = 8;
                             int wb = 12;
 
-                            matrixMul.gpuMatrixMul(wa, wb, wa);
+                            Log.d("MainActivity", "Calling matrixMul without DFE");
+                            matrixMul.localGpuMatrixMul(wa, wb, wa);
+                            Log.d("MainActivity", "Matrix mul no DFE finished");
+
+                            Log.d("MainActivity", "Calling matrixMul using the DFE");
+//                            matrixMul.gpuMatrixMul(wa, wb, wa);
+                            Log.d("MainActivity", "Matrix mul with DFE finished");
                         }
+                        Log.d("MainActivity", "Post myRemotedMethod");
                         Snackbar.make(view, "Post myRemotedMethod", Snackbar.LENGTH_LONG)
                                 .setAction("Action", null).show();
                     }
@@ -71,9 +73,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-    // Example of a call to a native method
-    TextView tv = (TextView) findViewById(R.id.sample_text);
-    tv.setText(stringFromJNI());
+        // Example of a call to a native method
+        TextView tv = (TextView) findViewById(R.id.sample_text);
+        tv.setText(stringFromJNI());
     }
 
     @Override
@@ -109,5 +111,11 @@ public class MainActivity extends AppCompatActivity {
         System.loadLibrary("native-lib");
     }
 
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (dfe != null) {
+            dfe.onDestroy();
+        }
+    }
 }
