@@ -7,29 +7,28 @@ import java.util.Vector;
  */
 
 public class Providers {
-            private Vector<Provider> providers;
-            private static Providers instance;
+    private Vector<Provider> providers;
+    private static Providers instance;
 
-            private Providers() {
-                providers=new Vector<Provider>();
-                instance=this;
-            }
+    private Providers() {
+        providers = new Vector<>();
+        providers.add(new Provider("193.205.230.23", 9991));
+        instance = this;
+    }
 
-            public static Providers getInstance() {
-                if (instance==null) {
-                    instance=new Providers();
-                }
+    public static Providers getInstance() {
+        if (instance == null) {
+            instance = new Providers();
+        }
         return instance;
     }
 
     public Provider getBest() {
-        Provider provider=null;
-        provider=providers.get(0);
-        return provider;
+        return providers.get(0);
     }
 
     public void register(String host, int port) {
-        Provider provider=new Provider(host,port);
+        Provider provider = new Provider(host, port);
         providers.add(provider);
     }
 }

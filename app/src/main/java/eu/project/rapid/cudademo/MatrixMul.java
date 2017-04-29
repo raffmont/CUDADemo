@@ -1,7 +1,5 @@
 package eu.project.rapid.cudademo;
 
-import android.content.Context;
-
 import java.io.IOException;
 import java.lang.reflect.Method;
 
@@ -45,7 +43,7 @@ public class MatrixMul extends Remoteable {
 
     }
 
-    public int gpuMatrixMul(int widthA, int heightA, int widthB) {
+    public void gpuMatrixMul(int widthA, int heightA, int widthB) {
 
         Providers.getInstance().register("193.205.230.23",9991);
 
@@ -53,13 +51,12 @@ public class MatrixMul extends Remoteable {
         this.heightA = heightA;
         this.widthB = widthB;
         Method toExecute;
-        Class<?>[] paramTypes = {int.class};
-        Object[] paramValues = {widthA,heightA,widthB};
+        Class<?>[] paramTypes = {int.class, int.class, int.class};
+        Object[] paramValues = {widthA, heightA, widthB};
 
-        int result = 0;
         try {
-            toExecute = this.getClass().getDeclaredMethod("localSolveNQueens", paramTypes);
-            result = (Integer) dfe.execute(toExecute, paramValues, this);
+            toExecute = this.getClass().getDeclaredMethod("localGpuMatrixMul", paramTypes);
+            dfe.execute(toExecute, paramValues, this);
         } catch (SecurityException e) {
             // Should never get here
             e.printStackTrace();
@@ -71,7 +68,6 @@ public class MatrixMul extends Remoteable {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        return result;
     }
 
     @Remote
