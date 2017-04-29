@@ -1,5 +1,7 @@
 package eu.project.rapid.cudademo;
 
+import android.content.Context;
+
 import java.io.IOException;
 import java.lang.reflect.Method;
 
@@ -7,6 +9,7 @@ import eu.project.rapid.ac.DFE;
 import eu.project.rapid.ac.Remote;
 import eu.project.rapid.ac.Remoteable;
 import eu.project.rapid.gvirtus.CudaDrFrontend;
+import eu.project.rapid.gvirtus.Providers;
 import eu.project.rapid.gvirtus.Util;
 
 /**
@@ -42,17 +45,21 @@ public class MatrixMul extends Remoteable {
 
     }
 
-    public void gpuMatrixMul(int widthA, int heightA, int widthB) {
+    public int gpuMatrixMul(int widthA, int heightA, int widthB) {
+
+        Providers.getInstance().register("193.205.230.23",9991);
+
         this.widthA = widthA;
         this.heightA = heightA;
         this.widthB = widthB;
         Method toExecute;
-        Class<?>[] paramTypes = {int.class, int.class, int.class};
-        Object[] paramValues = {widthA, heightA, widthB};
+        Class<?>[] paramTypes = {int.class};
+        Object[] paramValues = {widthA,heightA,widthB};
 
+        int result = 0;
         try {
-            toExecute = this.getClass().getDeclaredMethod("localGpuMatrixMul", paramTypes);
-            dfe.execute(toExecute, paramValues, this);
+            toExecute = this.getClass().getDeclaredMethod("localSolveNQueens", paramTypes);
+            result = (Integer) dfe.execute(toExecute, paramValues, this);
         } catch (SecurityException e) {
             // Should never get here
             e.printStackTrace();
@@ -64,12 +71,13 @@ public class MatrixMul extends Remoteable {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        return result;
     }
 
     @Remote
     public void localGpuMatrixMul(int widthA, int heightA, int widthB) {
         final float valB = 0.01f;
-        CudaDrFrontend driver = new CudaDrFrontend();
+        CudaDrFrontend driver=new CudaDrFrontend();
         try {
             driver.cuInit(0);
             String cuContext = driver.cuCtxCreate(0, 0);

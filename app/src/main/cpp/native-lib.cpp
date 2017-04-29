@@ -5,18 +5,8 @@
 
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_eu_project_rapid_cudademo_MainActivity_stringFromJNI(
-        JNIEnv* env,
-        jobject /* this */) {
-    std::string hello = "Hello from C++";
-    return env->NewStringUTF(hello.c_str());
-}
-
-
-JNIEXPORT jstring JNICALL
-Java_eu_project_rapid_gvirtus_Buffer_00024Helper_prepareFloat(JNIEnv *env,
-                                                                        jobject instance,
-                                                                        jfloatArray arr) {
+Java_eu_project_rapid_gvirtus_Buffer_prepareFloat(JNIEnv *env, jobject instance,
+                                                  jfloatArray floats_) {
     jstring result=NULL;
     size_t i;
     size_t j;
@@ -24,7 +14,7 @@ Java_eu_project_rapid_gvirtus_Buffer_00024Helper_prepareFloat(JNIEnv *env,
     int msg_index=0;
     char buffer[9];
     unsigned char const *p;
-    jsize len = env->GetArrayLength(arr);
+    jsize len = env->GetArrayLength(floats_);
     long msg_size=4*len*sizeof(float)+1;
     msg=(char *)malloc(msg_size);
     msg[msg_size-1]=0x00;
@@ -37,7 +27,7 @@ Java_eu_project_rapid_gvirtus_Buffer_00024Helper_prepareFloat(JNIEnv *env,
 
     thing.a = '0';
 
-    jfloat *body = env->GetFloatArrayElements(arr, 0);
+    jfloat *body = env->GetFloatArrayElements(floats_, 0);
     for (j=0;j<len;j++) {
         p = (unsigned char const *)&body[j];
         for (i = 0; i != sizeof(float); ++i) {
@@ -45,17 +35,16 @@ Java_eu_project_rapid_gvirtus_Buffer_00024Helper_prepareFloat(JNIEnv *env,
         }
         memcpy(msg+8*j,buffer,8);
     }
-    env->ReleaseFloatArrayElements(arr, body, 0);
+    env->ReleaseFloatArrayElements(floats_, body, 0);
     result = env->NewStringUTF(msg);
     free(msg);
     return result;
 }
 
+extern "C"
 JNIEXPORT jstring JNICALL
-Java_eu_project_rapid_gvirtus_Buffer_00024Helper_preparePtxSource(JNIEnv *env,
-                                                                            jobject instance,
-                                                                            jstring ptxSource_,
-                                                                            jlong size) {
+Java_eu_project_rapid_gvirtus_Buffer_preparePtxSource(JNIEnv *env, jobject instance,
+                                                      jstring ptxSource_, jlong size) {
     size_t i,j;
     char *msg=NULL;
     long msg_size=size*2+1;
@@ -98,11 +87,12 @@ printf("name printed as %%x 3 is %02X\n",nativeString[3] & 0xff);*/
     free(msg);
 
     return result;
+
 }
 
+extern "C"
 JNIEXPORT jstring JNICALL
-Java_eu_project_rapid_gvirtus_Buffer_00024Helper_prepareSingleByte(JNIEnv *env,
-                                                                             jobject instance, jint i) {
+Java_eu_project_rapid_gvirtus_Buffer_prepareSingleByte(JNIEnv *env, jobject instance, jint i) {
 
     char *msg=NULL;
     long msg_size=2+1;
@@ -115,3 +105,4 @@ Java_eu_project_rapid_gvirtus_Buffer_00024Helper_prepareSingleByte(JNIEnv *env,
 
     return result;
 }
+
